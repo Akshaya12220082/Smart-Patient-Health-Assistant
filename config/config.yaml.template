@@ -1,0 +1,22 @@
+project:
+  name: Smart Patient Health Assistant
+  version: 1.0
+
+paths:
+  raw_data: data/raw
+  processed_data: data/processed
+  models: models/saved_models
+  logs: logs/app.log
+
+ml_models:
+  diabetes: models/saved_models/diabetes_model.joblib
+  heart: models/saved_models/heart_model.joblib
+  kidney: models/saved_models/kidney_model.joblib
+
+apis:
+  google_maps:
+    key: "YOUR_GOOGLE_MAPS_API_KEY_HERE"
+  twilio:
+    sid: "YOUR_TWILIO_ACCOUNT_SID_HERE"
+    token: "YOUR_TWILIO_AUTH_TOKEN_HERE"
+    from_number: "YOUR_TWILIO_PHONE_NUMBER_HERE"
