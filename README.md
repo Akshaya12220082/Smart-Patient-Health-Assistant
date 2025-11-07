@@ -29,28 +29,33 @@ The **Smart Patient Health Assistant** is a comprehensive AI-powered healthcare 
 ## ✨ Features
 
 ### 🔮 Disease Prediction
+
 - **Multi-disease models**: Diabetes, Cardiovascular Disease, Chronic Kidney Disease
 - **Ensemble methods**: Combines multiple ML algorithms for improved accuracy
 - **Explainable AI**: SHAP and LIME integration for model transparency
 
 ### 📊 Risk Stratification
+
 - **Green Zone (0-30)**: Low risk - Preventive measures recommended
 - **Yellow Zone (31-70)**: Moderate risk - Doctor consultation advised
 - **Red Zone (71-100)**: High risk - Immediate medical attention required
 
 ### 💡 Personalized Recommendations
+
 - Lifestyle modifications (diet, exercise, sleep)
 - Safe OTC medication suggestions for mild conditions
 - Health monitoring parameters and frequency
 - When to seek professional medical help
 
 ### 🗺️ Location-Based Services
+
 - Find nearest hospitals based on condition type
 - Specialized facility recommendations
 - Distance, ratings, and contact information
 - Direct navigation integration
 
 ### 🚨 Emergency Response
+
 - Manual SOS button activation
 - Automatic emergency detection based on critical risk scores
 - Instant emergency contact notification
@@ -61,6 +66,7 @@ The **Smart Patient Health Assistant** is a comprehensive AI-powered healthcare 
 ## � Quick Start
 
 ### Prerequisites
+
 - Python 3.9 or higher
 - pip package manager
 - Git
@@ -68,30 +74,35 @@ The **Smart Patient Health Assistant** is a comprehensive AI-powered healthcare 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/Akshaya12220082/Smart-Patient-Health-Assistant.git
    cd Smart-Patient-Health-Assistant
    ```
 
 2. **Create a virtual environment (recommended)**
+
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
 3. **Install dependencies**
+
    ```bash
    pip install -r requirements.txt
    ```
 
 4. **Configure environment variables**
-   
+
    Copy the example environment file:
+
    ```bash
    cp .env.example .env
    ```
-   
+
    Edit `.env` and add your API keys:
+
    ```bash
    GOOGLE_MAPS_API_KEY=your_actual_google_maps_key
    TWILIO_ACCOUNT_SID=your_twilio_sid
@@ -111,6 +122,7 @@ The application consists of two parts that need to run simultaneously:
 #### 1. Start the Flask API Backend
 
 Open a terminal and run:
+
 ```bash
 python -m src.api.app
 ```
@@ -118,6 +130,7 @@ python -m src.api.app
 The API will start on `http://127.0.0.1:5000`
 
 You should see:
+
 ```
 ✅ Models loaded successfully
  * Running on http://127.0.0.1:5000
@@ -126,6 +139,7 @@ You should see:
 #### 2. Start the Streamlit Frontend
 
 Open a **new terminal** (keep the API running) and run:
+
 ```bash
 streamlit run app.py
 ```
@@ -137,16 +151,19 @@ The web interface will open automatically at `http://localhost:8501`
 ## 🧪 Testing
 
 Run the test suite:
+
 ```bash
 pytest tests/ -v
 ```
 
 Run tests with coverage:
+
 ```bash
 pytest tests/ --cov=src --cov-report=html
 ```
 
 View coverage report:
+
 ```bash
 open htmlcov/index.html  # On macOS
 # On Linux: xdg-open htmlcov/index.html
@@ -166,6 +183,7 @@ open htmlcov/index.html  # On macOS
 5. Click "Predict Now" to get risk assessment
 
 **Sample Data Files:**
+
 - Diabetes: `data/raw/diabetes.csv`
 - Heart: `data/raw/heart.csv`
 - Kidney: `data/raw/kidney.csv`
@@ -173,6 +191,7 @@ open htmlcov/index.html  # On macOS
 ### 2. Risk Stratification
 
 View your risk zone classification:
+
 - 🟢 **Green (0-30%)**: Low risk - maintain healthy habits
 - 🟡 **Yellow (31-70%)**: Moderate risk - consult doctor
 - 🔴 **Red (71-100%)**: High risk - seek immediate care
@@ -180,6 +199,7 @@ View your risk zone classification:
 ### 3. Personalized Recommendations
 
 After making a prediction, get AI-generated recommendations:
+
 - Lifestyle modifications
 - Dietary guidelines
 - Exercise suggestions
@@ -188,6 +208,7 @@ After making a prediction, get AI-generated recommendations:
 ### 4. Hospital Finder
 
 Find nearby hospitals based on:
+
 - Your location
 - Condition type
 - Specialty requirements
@@ -195,6 +216,7 @@ Find nearby hospitals based on:
 ### 5. Emergency Response
 
 For critical situations:
+
 - Click "Send SOS Alert"
 - Emergency contacts are notified via SMS and email
 - Nearest hospital receives patient summary
@@ -207,19 +229,20 @@ For critical situations:
 
 The application uses environment variables for sensitive data. Set these in your `.env` file:
 
-| Variable | Description | Required |
-|----------|-------------|----------|
+| Variable              | Description                             | Required |
+| --------------------- | --------------------------------------- | -------- |
 | `GOOGLE_MAPS_API_KEY` | Google Maps API key for hospital finder | Optional |
-| `TWILIO_ACCOUNT_SID` | Twilio account SID for SMS | Optional |
-| `TWILIO_AUTH_TOKEN` | Twilio auth token | Optional |
-| `TWILIO_PHONE_NUMBER` | Twilio phone number | Optional |
-| `SMTP_HOST` | SMTP server for emails | Optional |
-| `SMTP_USERNAME` | SMTP username | Optional |
-| `SMTP_PASSWORD` | SMTP password | Optional |
+| `TWILIO_ACCOUNT_SID`  | Twilio account SID for SMS              | Optional |
+| `TWILIO_AUTH_TOKEN`   | Twilio auth token                       | Optional |
+| `TWILIO_PHONE_NUMBER` | Twilio phone number                     | Optional |
+| `SMTP_HOST`           | SMTP server for emails                  | Optional |
+| `SMTP_USERNAME`       | SMTP username                           | Optional |
+| `SMTP_PASSWORD`       | SMTP password                           | Optional |
 
 ### Risk Thresholds
 
 Modify risk zone boundaries in `config/config.yaml`:
+
 ```yaml
 risk_thresholds:
   green: [0, 30]
@@ -286,18 +309,23 @@ Smart-Patient-Health-Assistant/
 ### Endpoints
 
 #### `GET /`
+
 Health check - Returns API status
 
 #### `GET /health`
+
 Detailed health check with loaded models info
 
 #### `POST /predict/<disease>`
+
 Make a prediction for a specific disease
 
 **Parameters:**
+
 - `disease`: One of `diabetes`, `heart`, `kidney`
 
 **Request Body (JSON):**
+
 ```json
 {
   "Pregnancies": 6,
@@ -312,6 +340,7 @@ Make a prediction for a specific disease
 ```
 
 **Response:**
+
 ```json
 {
   "disease": "diabetes",
@@ -322,13 +351,16 @@ Make a prediction for a specific disease
 ```
 
 #### `GET /recommendations/<disease>?risk_score=<score>`
+
 Get personalized recommendations
 
 **Parameters:**
+
 - `disease`: One of `diabetes`, `heart`, `kidney`
 - `risk_score`: Float between 0-100
 
 **Response:**
+
 ```json
 {
   "condition": "diabetes",
@@ -381,6 +413,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📧 Contact
 
 For questions or support:
+
 - Email: your.email@example.com
 - GitHub Issues: [Create an issue](https://github.com/Akshaya12220082/Smart-Patient-Health-Assistant/issues)
 
@@ -389,6 +422,7 @@ For questions or support:
 **Built with ❤️ for better healthcare accessibility**
 
 ### Machine Learning & Data Science
+
 - **Python 3.9+** - Primary programming language
 - **Scikit-learn** - Traditional ML algorithms
 - **XGBoost/LightGBM** - Gradient boosting frameworks
@@ -396,22 +430,25 @@ For questions or support:
 - **Pandas/NumPy** - Data manipulation and analysis
 
 ### Web Framework & API
+
 - **Flask/FastAPI** - Backend API development
 - **SQLAlchemy** - Database ORM
 - **Flask-CORS** - Cross-origin resource sharing
 
 ### Frontend & Visualization
+
 - **Streamlit/React** - User interface
 - **Matplotlib/Seaborn** - Statistical plotting
 - **Plotly** - Interactive visualizations
 
 ### External APIs & Services
+
 - **Google Maps API** - Hospital location services
 - **Twilio/SMTP** - Emergency notifications
 
 ### Development Tools
+
 - **Jupyter Notebooks** - Data exploration and analysis
 - **VS Code** - Primary IDE
 - **Git/GitHub** - Version control
 - **pytest** - Testing framework
-
