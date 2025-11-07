@@ -13,10 +13,33 @@ ml_models:
   heart: models/saved_models/heart_model.joblib
   kidney: models/saved_models/kidney_model.joblib
 
-apis:
-  google_maps:
-    key: "YOUR_GOOGLE_MAPS_API_KEY_HERE"
+# Risk thresholds for zone classification
+risk_thresholds:
+  green: [0, 30]
+  yellow: [31, 70]
+  red: [71, 100]
+
+# External APIs - Use environment variables for security
+api:
+  google_maps_api_key: ${GOOGLE_MAPS_API_KEY}
+
+services:
   twilio:
-    sid: "YOUR_TWILIO_ACCOUNT_SID_HERE"
-    token: "YOUR_TWILIO_AUTH_TOKEN_HERE"
-    from_number: "YOUR_TWILIO_PHONE_NUMBER_HERE"
+    account_sid: ${TWILIO_ACCOUNT_SID}
+    auth_token: ${TWILIO_AUTH_TOKEN}
+    from_number: ${TWILIO_PHONE_NUMBER}
+  
+  smtp:
+    host: ${SMTP_HOST}
+    port: ${SMTP_PORT}
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    from_email: ${SMTP_FROM_EMAIL}
+  
+  emergency_contacts:
+    - name: "Emergency Contact 1"
+      phone: "+1234567890"
+      email: "emergency1@example.com"
+    - name: "Emergency Contact 2"
+      phone: "+0987654321"
+      email: "emergency2@example.com"

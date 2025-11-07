@@ -55,6 +55,7 @@ logs/
 # Environment variables
 .env
 .env.local
+.env.production
 
 # Config files with secrets
 config/config.yaml
