@@ -5,11 +5,15 @@
 echo "🏥 Smart Patient Health Assistant - Quick Start"
 echo "================================================"
 
-# Check if virtual environment is activated
-if [[ -z "$VIRTUAL_ENV" ]]; then
-    echo "⚠️  Virtual environment not detected."
-    echo "   Consider running: source venv/bin/activate"
+# Activate virtual environment if it exists
+if [ -d "venv" ]; then
+    echo "📦 Activating virtual environment..."
+    source venv/bin/activate
+    echo "✅ Virtual environment activated"
     echo ""
+else
+    echo "⚠️  Virtual environment not found. Please run: python3 -m venv venv && ./venv/bin/pip install -r requirements.txt"
+    exit 1
 fi
 
 # Function to cleanup on exit
@@ -25,7 +29,7 @@ trap cleanup SIGINT SIGTERM
 
 # Start Flask API in background
 echo "🔌 Starting Flask API..."
-python -m src.api.app &
+./venv/bin/python -m src.api.app &
 API_PID=$!
 
 # Wait for API to start
@@ -42,7 +46,7 @@ echo ""
 
 # Start Streamlit
 echo "🌐 Starting Streamlit UI..."
-streamlit run app.py &
+./venv/bin/streamlit run app.py &
 STREAMLIT_PID=$!
 
 echo ""

@@ -1,0 +1,45 @@
+{
+  "model_name": "kidney",
+  "model_type": "Ensemble (RF+XGB+LGBM+GB)",
+  "features": [
+    "id",
+    "age",
+    "bp",
+    "sg",
+    "al",
+    "su",
+    "rbc",
+    "pc",
+    "pcc",
+    "ba",
+    "bgr",
+    "bu",
+    "sc",
+    "sod",
+    "pot",
+    "hemo",
+    "pcv",
+    "wc",
+    "rc",
+    "htn",
+    "dm",
+    "cad",
+    "appet",
+    "pe",
+    "ane"
+  ],
+  "n_features": 25,
+  "n_samples_train": 320,
+  "n_samples_test": 80,
+  "metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "roc_auc": 1.0
+  },
+  "cv_scores": {
+    "mean": 0.996875,
+    "std": 0.00625
+  }
+}

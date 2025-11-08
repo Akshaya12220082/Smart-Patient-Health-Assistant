@@ -10,18 +10,29 @@ from src.utils import load_config
 
 
 def risk_band(score_0_100: float, config_path: str | None = None) -> str:
-    config = load_config(config_path)
-    thresholds = config["risk_thresholds"]
-    score = float(score_0_100)
-    g0, g1 = thresholds["green"]
-    y0, y1 = thresholds["yellow"]
-    r0, r1 = thresholds["red"]
-    if g0 <= score <= g1:
-        return "green"
-    if y0 <= score <= y1:
-        return "yellow"
-    if r0 <= score <= r1:
-        return "red"
+    """Determine risk band from score"""
+    try:
+        config = load_config(config_path)
+        thresholds = config["risk_thresholds"]
+        score = float(score_0_100)
+        g0, g1 = thresholds["green"]
+        y0, y1 = thresholds["yellow"]
+        r0, r1 = thresholds["red"]
+        if g0 <= score <= g1:
+            return "green"
+        if y0 <= score <= y1:
+            return "yellow"
+        if r0 <= score <= r1:
+            return "red"
+    except Exception:
+        # Fallback to simple thresholds if config fails
+        score = float(score_0_100)
+        if score <= 30:
+            return "green"
+        elif score <= 70:
+            return "yellow"
+        else:
+            return "red"
     return "unknown"
 
 

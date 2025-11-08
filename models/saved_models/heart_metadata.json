@@ -1,0 +1,33 @@
+{
+  "model_name": "heart",
+  "model_type": "Ensemble (RF+XGB+LGBM+GB)",
+  "features": [
+    "age",
+    "sex",
+    "cp",
+    "trestbps",
+    "chol",
+    "fbs",
+    "restecg",
+    "thalach",
+    "exang",
+    "oldpeak",
+    "slope",
+    "ca",
+    "thal"
+  ],
+  "n_features": 13,
+  "n_samples_train": 820,
+  "n_samples_test": 205,
+  "metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "roc_auc": 1.0
+  },
+  "cv_scores": {
+    "mean": 0.9853658536585366,
+    "std": 0.01368899043941687
+  }
+}

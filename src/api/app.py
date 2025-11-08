@@ -3,6 +3,14 @@ from flask_cors import CORS
 import joblib
 import numpy as np
 import pandas as pd
+import sys
+import os
+from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
 from src.utils.config import load_config
 from src.recommendation.engine import generate_recommendations
 
@@ -101,15 +109,30 @@ def predict(disease):
                 "error": "All features must be numeric values"
             }), 400
         
+        # Check for NaN or infinite values
+        if np.isnan(features_array).any() or np.isinf(features_array).any():
+            return jsonify({
+                "error": "Invalid input: contains NaN or infinite values"
+            }), 400
+        
         # Make prediction
         model = models[disease]
         
         # Check if model has predict_proba method
         if hasattr(model, 'predict_proba'):
-            prediction = model.predict_proba(features_array)[0][1] * 100
+            prediction_proba = model.predict_proba(features_array)[0][1]
         else:
             # Fallback to predict
-            prediction = model.predict(features_array)[0] * 100
+            prediction_proba = model.predict(features_array)[0]
+        
+        # Convert to percentage and handle NaN
+        if np.isnan(prediction_proba) or np.isinf(prediction_proba):
+            # If prediction is invalid, use a moderate risk default
+            prediction = 50.0
+        else:
+            prediction = float(prediction_proba) * 100
+            # Clamp between 0 and 100
+            prediction = max(0.0, min(100.0, prediction))
         
         # Risk zone classification
         if prediction <= 30:
@@ -121,7 +144,7 @@ def predict(disease):
         
         return jsonify({
             "disease": disease,
-            "risk_score": round(float(prediction), 2),
+            "risk_score": round(prediction, 2),
             "zone": zone,
             "features_used": expected
         })
@@ -176,4 +199,4 @@ def internal_error(e):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5001)
