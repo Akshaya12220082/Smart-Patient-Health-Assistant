@@ -15,8 +15,13 @@ CONDITION_TO_KEYWORDS = {
 
 
 def find_hospitals_nearby(lat: float, lng: float, condition: str, radius_m: int = 5000, config_path: str | None = None) -> List[Dict[str, Any]]:
-    cfg = load_config(config_path)
+    cfg = load_config() if config_path is None else load_config(config_path)
     api_key = cfg["api"]["google_maps_api_key"]
+    
+    # Check if API key is actually set
+    if not api_key or api_key.startswith("${"):
+        raise ValueError("Google Maps API key not configured. Please set GOOGLE_MAPS_API_KEY environment variable.")
+    
     gmaps = googlemaps.Client(key=api_key)
 
     keywords = CONDITION_TO_KEYWORDS.get(condition.lower(), ["hospital"])

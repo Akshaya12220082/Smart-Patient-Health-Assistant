@@ -1,62 +1,56 @@
 #!/bin/bash
 # Quick start script for Smart Patient Health Assistant
-# This script starts both the Flask API and Streamlit app
+# Single command to start both Flask API and Streamlit app
 
 echo "🏥 Smart Patient Health Assistant - Quick Start"
 echo "================================================"
 
 # Activate virtual environment if it exists
 if [ -d "venv" ]; then
-    echo "📦 Activating virtual environment..."
     source venv/bin/activate
-    echo "✅ Virtual environment activated"
-    echo ""
 else
-    echo "⚠️  Virtual environment not found. Please run: python3 -m venv venv && ./venv/bin/pip install -r requirements.txt"
+    echo "⚠️  Virtual environment not found. Run: python3 -m venv venv && ./venv/bin/pip install -r requirements.txt"
     exit 1
 fi
+
+# Kill any existing processes on ports 5001 and 8501
+echo "🧹 Cleaning up existing processes..."
+lsof -ti:5001 | xargs kill -9 2>/dev/null
+lsof -ti:8501 | xargs kill -9 2>/dev/null
+sleep 1
 
 # Function to cleanup on exit
 cleanup() {
     echo ""
     echo "🛑 Shutting down services..."
-    kill $API_PID 2>/dev/null
-    kill $STREAMLIT_PID 2>/dev/null
+    jobs -p | xargs kill 2>/dev/null
     exit 0
 }
 
-trap cleanup SIGINT SIGTERM
+trap cleanup SIGINT SIGTERM EXIT
 
-# Start Flask API in background
-echo "🔌 Starting Flask API..."
-./venv/bin/python -m src.api.app &
-API_PID=$!
+echo "🚀 Starting services..."
+echo ""
 
-# Wait for API to start
+# Start both services in background and redirect output
+python -m src.api.app > /tmp/flask_api.log 2>&1 & 
+sleep 2
+streamlit run app.py > /tmp/streamlit.log 2>&1 &
+
+# Wait a moment for services to start
 sleep 3
 
-# Check if API started successfully
-if ! ps -p $API_PID > /dev/null; then
-    echo "❌ Failed to start Flask API"
-    exit 1
-fi
-
-echo "✅ Flask API running (PID: $API_PID)"
-echo ""
-
-# Start Streamlit
-echo "🌐 Starting Streamlit UI..."
-./venv/bin/streamlit run app.py &
-STREAMLIT_PID=$!
-
-echo ""
 echo "✅ Both services are running!"
 echo ""
 echo "📍 Access the application at: http://localhost:8501"
-echo "📍 API endpoint: http://127.0.0.1:5000"
+echo "📍 API endpoint: http://127.0.0.1:5001"
+echo ""
+echo "📋 Logs:"
+echo "   Flask API: tail -f /tmp/flask_api.log"
+echo "   Streamlit: tail -f /tmp/streamlit.log"
 echo ""
 echo "Press Ctrl+C to stop all services"
 echo "================================================"
 
-# Wait for both processes
+# Keep script running and wait for all background jobs
 wait

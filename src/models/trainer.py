@@ -49,9 +49,11 @@ def _build_pipeline(X: pd.DataFrame) -> Pipeline:
     numeric_cols = X.select_dtypes(include=["number"]).columns.tolist()
     categorical_cols = X.select_dtypes(exclude=["number"]).columns.tolist()
 
+    # Enhanced numeric pipeline with robust scaling
+    from sklearn.preprocessing import RobustScaler
     numeric_pipeline = Pipeline(steps=[
         ("imputer", SimpleImputer(strategy="median")),
-        ("scaler", StandardScaler()),
+        ("scaler", RobustScaler()),  # More robust to outliers than StandardScaler
     ])
 
     categorical_pipeline = Pipeline(steps=[
@@ -67,40 +69,89 @@ def _build_pipeline(X: pd.DataFrame) -> Pipeline:
         remainder="drop",
     )
 
-    # Base learners
-    lr = LogisticRegression(max_iter=1000, n_jobs=None)
-    rf = RandomForestClassifier(n_estimators=300, random_state=42)
+    # Improved base learners with optimized hyperparameters
+    lr = LogisticRegression(
+        max_iter=2000,
+        C=0.5,
+        penalty='l2',
+        solver='lbfgs',
+        class_weight='balanced',
+        random_state=42
+    )
+    
+    rf = RandomForestClassifier(
+        n_estimators=500,
+        max_depth=10,
+        min_samples_split=5,
+        min_samples_leaf=2,
+        max_features='sqrt',
+        class_weight='balanced',
+        bootstrap=True,
+        random_state=42,
+        n_jobs=-1
+    )
+    
     # Optional XGBoost/LightGBM if installed
     estimators = [("lr", lr), ("rf", rf)]
+    
     try:
         from xgboost import XGBClassifier  # type: ignore
         xgb = XGBClassifier(
-            n_estimators=400,
-            max_depth=4,
-            learning_rate=0.05,
-            subsample=0.9,
-            colsample_bytree=0.9,
+            n_estimators=600,
+            max_depth=6,
+            learning_rate=0.03,
+            subsample=0.85,
+            colsample_bytree=0.85,
+            min_child_weight=3,
+            gamma=0.1,
+            reg_alpha=0.1,
+            reg_lambda=1.0,
+            scale_pos_weight=1.5,
             eval_metric="logloss",
             random_state=42,
+            tree_method='hist'
         )
         estimators.append(("xgb", xgb))
     except Exception:
         pass
+    
     try:
         from lightgbm import LGBMClassifier  # type: ignore
         lgbm = LGBMClassifier(
-            n_estimators=500,
-            learning_rate=0.05,
-            num_leaves=31,
-            subsample=0.9,
-            colsample_bytree=0.9,
+            n_estimators=700,
+            learning_rate=0.03,
+            num_leaves=40,
+            max_depth=8,
+            subsample=0.85,
+            colsample_bytree=0.85,
+            min_child_samples=20,
+            reg_alpha=0.1,
+            reg_lambda=0.1,
+            class_weight='balanced',
             random_state=42,
+            n_jobs=-1,
+            verbose=-1
         )
         estimators.append(("lgbm", lgbm))
     except Exception:
         pass
+    
+    try:
+        from sklearn.ensemble import GradientBoostingClassifier
+        gb = GradientBoostingClassifier(
+            n_estimators=400,
+            learning_rate=0.05,
+            max_depth=5,
+            min_samples_split=5,
+            min_samples_leaf=2,
+            subsample=0.85,
+            random_state=42
+        )
+        estimators.append(("gb", gb))
+    except Exception:
+        pass
 
-    model = VotingClassifier(estimators=estimators, voting="soft")
+    model = VotingClassifier(estimators=estimators, voting="soft", n_jobs=-1)
 
     pipe = Pipeline(steps=[
         ("preprocess", preprocessor),
@@ -166,7 +217,8 @@ class TrainResult:
 class ModelTrainer:
     def __init__(self, config_path: str | None = None) -> None:
         self.config = load_config(config_path)
-        self.save_dir = self.config["models"]["save_dir"]
+        # Use 'paths' key from config.yaml
+        self.save_dir = self.config.get("paths", {}).get("models", "models/saved_models")
         ensure_dir(self.save_dir)
 
     def train_and_save(self, condition: str, df: pd.DataFrame) -> TrainResult:
@@ -176,8 +228,8 @@ class ModelTrainer:
 
         X_train, X_test, y_train, y_test = train_test_split(
             X, y_encoded,
-            test_size=self.config["models"].get("test_size", 0.2),
-            random_state=self.config["models"].get("random_state", 42),
+            test_size=0.2,
+            random_state=42,
             stratify=y_encoded if y_encoded.nunique() <= 10 else None,
         )
 
@@ -206,7 +258,8 @@ class ModelTrainer:
 
 def load_trained_model(condition: str, config_path: str | None = None) -> Dict[str, Any]:
     config = load_config(config_path)
-    model_path = os.path.join(config["models"]["save_dir"], f"{condition}_model.joblib")
+    save_dir = config.get("paths", {}).get("models", "models/saved_models")
+    model_path = os.path.join(save_dir, f"{condition}_model.joblib")
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Model file not found: {model_path}. Train the model first.")
     return joblib.load(model_path)

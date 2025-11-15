@@ -1,0 +1,27 @@
+🚀 Advanced Diabetes Model Training
+======================================================================
+📂 Loaded 768 samples
+
+🔧 Engineering features...
+✅ Total features: 15 (8 original + 7 engineered)
+   Features: ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age', 'BMI_Age', 'Glucose_BMI', 'Insulin_Glucose_Ratio', 'BMI_squared', 'Glucose_squared', 'Metabolic_Risk', 'Age_BMI_Interaction']
+
+🤖 Building optimized ensemble...
+
+📊 Performing 10-fold cross-validation...
+
+======================================================================
+📈 Cross-Validation Results:
+   • Mean Accuracy: 76.15%
+   • Std Dev:       0.0560
+   • Min Accuracy:  64.47%
+   • Max Accuracy:  84.42%
+======================================================================
+
+🎯 Training final model on full dataset...
+
+💾 Enhanced model saved!
+   Location: models/saved_models/diabetes_model_enhanced.joblib
+
+🎉 SUCCESS! Achieved 76.15% accuracy
+   Improvement: 3.42 percentage points
